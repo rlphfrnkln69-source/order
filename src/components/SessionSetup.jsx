@@ -14,7 +14,7 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
   async function handleCreate(e) {
     e.preventDefault()
     if (!sessionName.trim()) {
-      setErr('Give this session a name — e.g. "Friday Night at Jollibee".')
+      setErr('Give this session a name.')
       return
     }
     setBusy(true)
@@ -97,7 +97,6 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
           <label className="field">
             <span>Session name</span>
             <input
-              placeholder="Friday Night at Jollibee"
               value={sessionName}
               onChange={(e) => setSessionName(e.target.value)}
               maxLength={80}
@@ -107,7 +106,6 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
           <label className="field">
             <span>Restaurant <em>(optional)</em></span>
             <input
-              placeholder="Jollibee - Tarlac"
               value={restaurant}
               onChange={(e) => setRestaurant(e.target.value)}
               maxLength={80}
@@ -116,7 +114,6 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
           <label className="field">
             <span>Notes <em>(optional)</em></span>
             <input
-              placeholder="Delivery in 30 mins, cash only"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               maxLength={140}
@@ -131,7 +128,6 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
           <label className="field">
             <span>Session code</span>
             <input
-              placeholder="ABC123"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               maxLength={8}
