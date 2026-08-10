@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Heart } from 'lucide-react'
 import gcashQr from '../asset/gcash-qr.png'
 import mayaQr from '../asset/maya-qr.png'
 
@@ -17,7 +18,8 @@ export default function TipJar({ onToast }) {
   return (
     <>
       <button className="tipjar-trigger" onClick={() => setOpen(true)}>
-        ♡ Support the developer
+        <Heart size={12} strokeWidth={2} style={{ verticalAlign: '-2px', marginRight: 4 }} />
+        Support the developer
       </button>
 
       {open && (
