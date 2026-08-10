@@ -611,3 +611,56 @@ button, input {
   .printable-total-label { text-align: right; font-weight: 800; }
   .printable-total-value { font-weight: 800; }
 }
+
+/* ---------- Tip jar ---------- */
+.tipjar-trigger {
+  display: block;
+  width: 100%;
+  margin: 28px 0 4px;
+  background: none;
+  border: none;
+  color: #a29c8e;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+.tipjar-qr-row {
+  display: flex;
+  gap: 14px;
+  margin: 14px 0;
+}
+.tipjar-qr-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.tipjar-qr-img {
+  width: 100%;
+  max-width: 140px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+}
+.tipjar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+.tipjar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #d9d3c4;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.tipjar-label {
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--green-deep);
+}
+.tipjar-value { font-size: 14px; margin-top: 2px; word-break: break-all; }
