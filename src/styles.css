@@ -1,17 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-  --ink: #23201B;
-  --paper: #FBFAF6;
-  --paper-dim: #F0EDE3;
-  --green: #6E8F3E;
-  --green-deep: #4E6B29;
+  --ink: #1D1F1A;
+  --paper: #FCFCFA;
+  --surface: #F4F3EC;
+  --surface-white: #FFFFFF;
+  --line: #ECEAE2;
+  --line-strong: #DEDCD0;
+  --muted: #8C8E82;
+
+  --green: #7ED957;
+  --green-text: #173404;
+  --green-mid: #4C8A22;
+  --green-deep: #3B6D11;
+
   --turmeric: #E2A63B;
   --chili: #C6483B;
   --chili-deep: #A23A2F;
-  --line: #23201B;
+  --line-legacy: #1D1F1A;
 
-  --radius: 4px;
-  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
-  --font-body: 'Manrope', system-ui, sans-serif;
+  --radius: 10px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -49,7 +59,7 @@ button, input {
 }
 
 .brand-mark { font-size: 40px; }
-.muted { color: #6b665c; }
+.muted { color: var(--muted); }
 .muted.center { text-align: center; padding: 24px 0; }
 
 /* ---------- Hero ---------- */
@@ -59,14 +69,15 @@ button, input {
 }
 .hero-eyebrow {
   font-family: var(--font-body);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: var(--green-deep);
+  color: var(--green-mid);
   margin-bottom: 6px;
 }
 .hero-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 44px;
   letter-spacing: -0.01em;
   margin: 0;
@@ -74,24 +85,25 @@ button, input {
 }
 .hero-tagline {
   margin: 8px 0 0;
-  color: #6b665c;
-  font-weight: 600;
+  color: var(--muted);
+  font-weight: 500;
 }
 
 /* ---------- Tabs ---------- */
 .tabs {
   display: flex;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 16px;
+  background: var(--surface-white);
 }
 .tab {
   flex: 1;
   padding: 12px 8px;
   border: none;
-  background: var(--paper);
-  font-weight: 700;
+  background: transparent;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   color: var(--ink);
@@ -103,18 +115,17 @@ button, input {
 
 /* ---------- Cards / forms ---------- */
 .card {
-  background: #fff;
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
+  background: var(--surface-white);
+  border: 1px solid var(--line);
+  border-radius: 16px;
   padding: 18px;
   margin-bottom: 16px;
-  box-shadow: 4px 4px 0 rgba(35, 32, 27, 0.08);
 }
 .card-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 15px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   margin: 0 0 14px;
 }
 
@@ -125,10 +136,10 @@ button, input {
 .field span {
   display: block;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6b665c;
+  color: var(--muted);
   margin-bottom: 6px;
 }
 .field span em {
@@ -136,21 +147,21 @@ button, input {
   text-transform: none;
   font-weight: 500;
   letter-spacing: normal;
-  color: #a29c8e;
+  color: #b3b0a4;
 }
 .field input {
   width: 100%;
   padding: 13px 12px;
-  border: 2px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   font-size: 16px;
   background: var(--paper);
   color: var(--ink);
 }
 .field input:focus {
-  outline: 3px solid var(--turmeric);
+  outline: 2px solid var(--green);
   outline-offset: 0;
-  border-color: var(--ink);
+  border-color: var(--green-mid);
 }
 
 .field-row {
@@ -163,7 +174,7 @@ button, input {
 .stepper {
   display: flex;
   align-items: stretch;
-  border: 2px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--paper);
@@ -171,20 +182,20 @@ button, input {
 .stepper-btn {
   width: 44px;
   border: none;
-  background: var(--paper-dim);
+  background: var(--surface);
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
   color: var(--ink);
 }
-.stepper-btn:active { background: var(--turmeric); }
+.stepper-btn:active { background: var(--green); color: var(--green-text); }
 .stepper-input {
   flex: 1;
   border: none;
   background: transparent;
   text-align: center;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 13px 0;
   -moz-appearance: textfield;
 }
@@ -194,12 +205,12 @@ button, input {
 .price-input {
   display: flex;
   align-items: center;
-  border: 2px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--paper);
   padding: 0 12px;
 }
-.price-prefix { font-weight: 800; color: var(--green-deep); margin-right: 4px; }
+.price-prefix { font-weight: 700; color: var(--green-mid); margin-right: 4px; }
 .price-input input {
   border: none;
   background: transparent;
@@ -214,19 +225,20 @@ button, input {
 }
 .live-total strong {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 20px;
-  color: var(--green-deep);
+  color: var(--green-mid);
 }
 
 /* ---------- Buttons ---------- */
 .btn {
-  border: 2px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
   padding: 14px 20px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  background: #fff;
+  background: var(--surface-white);
   color: var(--ink);
   transition: transform 0.05s ease;
 }
@@ -235,28 +247,30 @@ button, input {
 .btn--block { width: 100%; }
 .btn--primary {
   background: var(--green);
-  border-color: var(--green-deep);
-  color: #fff;
+  border-color: var(--green);
+  color: var(--green-text);
+  font-weight: 700;
 }
 .btn--secondary {
   background: var(--turmeric);
-  border-color: #b6812a;
-  color: var(--ink);
+  border-color: var(--turmeric);
+  color: #4A3413;
+  font-weight: 700;
 }
 .btn--outline {
-  background: #fff;
+  background: var(--surface-white);
 }
 .btn--danger {
   background: var(--chili);
-  border-color: var(--chili-deep);
+  border-color: var(--chili);
   color: #fff;
 }
 
 .link-btn {
   background: none;
   border: none;
-  color: var(--green-deep);
-  font-weight: 700;
+  color: var(--green-mid);
+  font-weight: 600;
   cursor: pointer;
   padding: 8px 0;
   font-size: 14px;
@@ -271,8 +285,8 @@ button, input {
 
 /* ---------- Alerts ---------- */
 .alert {
-  background: #FBE3DF;
-  border: 2px solid var(--chili);
+  background: #FBEAE7;
+  border: 1px solid var(--chili);
   color: var(--chili-deep);
   padding: 10px 12px;
   border-radius: var(--radius);
@@ -281,8 +295,8 @@ button, input {
   margin-bottom: 14px;
 }
 .alert--info {
-  background: #EFEBDD;
-  border-color: var(--line);
+  background: var(--surface);
+  border-color: var(--line-strong);
   color: var(--ink);
 }
 
@@ -290,9 +304,10 @@ button, input {
 .topbar { margin-bottom: 8px; }
 
 .session-card {
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
   padding: 18px 18px 14px;
   margin-bottom: 16px;
   position: relative;
@@ -305,21 +320,23 @@ button, input {
 }
 .session-title {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 22px;
   margin: 0;
   cursor: default;
   line-height: 1.15;
 }
-.edit-hint { font-size: 13px; margin-left: 6px; opacity: 0.6; }
+.edit-hint { font-size: 13px; margin-left: 6px; opacity: 0.5; }
 .session-rename-input {
   width: 100%;
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 20px;
   padding: 6px 8px;
   border-radius: var(--radius);
-  border: 2px solid var(--turmeric);
+  border: 2px solid var(--green);
 }
-.session-sub { margin: 6px 0 0; opacity: 0.85; font-size: 14px; }
+.session-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
 .session-notes { font-style: italic; }
 .session-code-row {
   display: flex;
@@ -327,18 +344,19 @@ button, input {
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed rgba(251, 250, 246, 0.3);
+  border-top: 1px dashed var(--line-strong);
 }
-.session-code-row .muted { color: rgba(251, 250, 246, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.session-code-row .muted { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
 .session-code {
   font-family: var(--font-display);
-  letter-spacing: 0.15em;
-  color: var(--turmeric);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--green-mid);
   font-size: 16px;
 }
 .badge {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.06em;
   padding: 4px 10px;
   border-radius: 999px;
@@ -354,71 +372,59 @@ button, input {
 }
 .summary-stat {
   flex: 1;
-  background: #fff;
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
+  background: var(--surface-white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 12px 8px;
   text-align: center;
 }
 .summary-stat--total {
-  background: var(--turmeric);
+  background: var(--green);
+  border-color: var(--green);
 }
 .summary-emoji { font-size: 18px; }
 .summary-value {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 18px;
   margin-top: 2px;
 }
+.summary-stat--total .summary-value { color: var(--green-text); }
 .summary-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6b665c;
+  color: var(--muted);
   margin-top: 2px;
 }
-.summary-stat--total .summary-label { color: #5c4413; }
+.summary-stat--total .summary-label { color: #27500A; }
 
-/* ---------- Ticket rows (signature element) ----------
-   Each order renders like a torn food-stall order slip —
-   a serrated top edge and a dashed stub, echoing the
-   paper tickets used at carinderias / turo-turo counters. */
+/* ---------- Order rows (plain modern cards) ---------- */
 .ticket-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   margin-bottom: 8px;
 }
 .ticket {
   position: relative;
-  background: #fff;
-  border: 2px solid var(--line);
-  border-radius: 0 0 var(--radius) var(--radius);
-  padding: 16px 14px 12px;
+  background: var(--surface-white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
 }
-.ticket::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  height: 10px;
-  background:
-    linear-gradient(135deg, var(--paper) 50%, transparent 50%) top left / 12px 12px repeat-x,
-    linear-gradient(-135deg, var(--paper) 50%, transparent 50%) top right / 12px 12px repeat-x;
-  border-top: 2px solid var(--line);
-}
-.ticket--paid { background: #F3F7EC; }
+.ticket--paid { background: #F6FBEF; border-color: #DCEAC7; }
 .ticket-main { min-width: 0; }
 .ticket-who {
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--green-deep);
+  color: var(--green-mid);
 }
 .ticket-item {
   font-size: 16px;
@@ -426,26 +432,29 @@ button, input {
   margin-top: 3px;
   word-break: break-word;
 }
-.ticket-qty { color: #6b665c; font-weight: 500; }
+.ticket-qty { color: var(--muted); font-weight: 400; }
 .ticket-side {
   text-align: right;
   flex-shrink: 0;
 }
 .ticket-total {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 16px;
 }
 .pill {
   margin-top: 6px;
   border: none;
-  border-radius: 999px;
+  background: none;
+  border-radius: 0;
   font-size: 11px;
-  font-weight: 800;
-  padding: 5px 10px;
+  font-weight: 700;
+  padding: 0;
   cursor: default;
+  display: inline-block;
 }
-.pill--paid { background: #DCEAC7; color: var(--green-deep); }
-.pill--unpaid { background: #FBEBCF; color: #8a5f16; }
+.pill--paid { color: var(--green-mid); }
+.pill--unpaid { color: #B4791A; }
 .pill--clickable { cursor: pointer; }
 .pill:disabled { opacity: 1; }
 
@@ -457,9 +466,9 @@ button, input {
   gap: 6px;
 }
 .icon-btn {
-  border: 1px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   background: var(--paper);
-  border-radius: var(--radius);
+  border-radius: 8px;
   width: 30px;
   height: 30px;
   font-size: 13px;
@@ -473,7 +482,7 @@ button, input {
   width: 100%;
   padding: 10px;
   margin-bottom: 8px;
-  border: 2px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   font-size: 15px;
 }
@@ -486,7 +495,7 @@ button, input {
 .empty-state {
   text-align: center;
   padding: 32px 12px;
-  color: #6b665c;
+  color: var(--muted);
 }
 .empty-emoji { font-size: 32px; margin-bottom: 8px; }
 
@@ -494,21 +503,21 @@ button, input {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(35, 32, 27, 0.55);
+  background: rgba(29, 31, 26, 0.45);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   z-index: 20;
 }
 .modal {
-  background: #fff;
+  background: var(--surface-white);
   width: 100%;
   max-width: 480px;
-  border-radius: 16px 16px 0 0;
+  border-radius: 20px 20px 0 0;
   padding: 22px 18px 28px;
-  border-top: 2px solid var(--line);
+  border-top: 1px solid var(--line);
 }
-.modal p { margin: 0 0 6px; font-weight: 700; }
+.modal p { margin: 0 0 6px; font-weight: 600; }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 
 /* ---------- Toast ---------- */
@@ -521,10 +530,10 @@ button, input {
   color: var(--paper);
   padding: 12px 20px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   z-index: 30;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 @media (min-width: 520px) {
@@ -535,7 +544,7 @@ button, input {
 .modal--tall {
   max-height: 82vh;
   overflow-y: auto;
-  border-radius: 16px;
+  border-radius: 20px;
 }
 .modal-header {
   display: flex;
@@ -545,11 +554,12 @@ button, input {
 }
 .dash-subhead {
   font-family: var(--font-display);
+  font-weight: 700;
   font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   margin: 18px 0 10px;
-  color: var(--green-deep);
+  color: var(--green-mid);
 }
 .dash-person-list, .dash-activity-list {
   display: flex;
@@ -560,19 +570,19 @@ button, input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #e5e0d2;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 10px 12px;
 }
-.dash-person-name { font-weight: 700; }
-.dash-person-total { font-family: var(--font-display); font-size: 15px; }
+.dash-person-name { font-weight: 600; }
+.dash-person-total { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
 .dash-activity-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   font-size: 14px;
   padding: 8px 0;
-  border-bottom: 1px dashed #e5e0d2;
+  border-bottom: 1px dashed var(--line);
 }
 
 /* ---------- Printable PDF report ---------- */
@@ -588,12 +598,14 @@ button, input {
   }
   .printable-title {
     font-family: var(--font-display);
+    font-weight: 700;
     font-size: 26px;
     margin: 0 0 4px;
   }
   .printable-sub { margin: 2px 0; color: #333; font-size: 13px; }
   .printable-section-title {
     font-family: var(--font-display);
+    font-weight: 700;
     font-size: 16px;
     margin: 24px 0 10px;
   }
@@ -608,8 +620,8 @@ button, input {
     padding: 6px 8px;
     text-align: left;
   }
-  .printable-total-label { text-align: right; font-weight: 800; }
-  .printable-total-value { font-weight: 800; }
+  .printable-total-label { text-align: right; font-weight: 700; }
+  .printable-total-value { font-weight: 700; }
 }
 
 /* ---------- Tip jar ---------- */
@@ -619,7 +631,7 @@ button, input {
   margin: 28px 0 4px;
   background: none;
   border: none;
-  color: #a29c8e;
+  color: var(--muted);
   font-size: 12px;
   cursor: pointer;
   text-align: center;
@@ -639,7 +651,7 @@ button, input {
 .tipjar-qr-img {
   width: 100%;
   max-width: 140px;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
 }
 .tipjar-list {
@@ -652,15 +664,15 @@ button, input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 2px solid #d9d3c4;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   padding: 10px 12px;
 }
 .tipjar-label {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--green-deep);
+  color: var(--green-mid);
 }
 .tipjar-value { font-size: 14px; margin-top: 2px; word-break: break-all; }
