@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import gcashQr from '../assets/gcash-qr.png'
-import mayaQr from '../assets/maya-qr.png'
+import gcashQr from '../asset/gcash-qr.png'
+import mayaQr from '../asset/maya-qr.png'
 
 export default function TipJar({ onToast }) {
   const [open, setOpen] = useState(false)
