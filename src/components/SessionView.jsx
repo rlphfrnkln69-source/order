@@ -3,6 +3,8 @@ import { supabase } from '../supabaseClient'
 import OrderForm from './OrderForm.jsx'
 import OrderList from './OrderList.jsx'
 import Summary from './Summary.jsx'
+import OrganizerDashboard from './OrganizerDashboard.jsx'
+import PrintableReport from './PrintableReport.jsx'
 
 export default function SessionView({ session, clientToken, onSessionUpdated, onLeave }) {
   const [orders, setOrders] = useState([])
@@ -10,6 +12,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const [toast, setToast] = useState('')
   const [renaming, setRenaming] = useState(false)
   const [nameDraft, setNameDraft] = useState(session.session_name)
+  const [showDashboard, setShowDashboard] = useState(false)
 
   const isOrganizer = useMemo(() => {
     return localStorage.getItem(`go_organizer_${session.id}`) === session.organizer_token
@@ -99,10 +102,14 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     }
   }
 
+  function handleDownloadPdf() {
+    window.print()
+  }
+
   const isClosed = session.status === 'closed'
 
   return (
-    <div className="screen">
+    <div className="screen app-ui">
       <header className="topbar">
         <button className="link-btn" onClick={onLeave}>← New / switch session</button>
       </header>
@@ -137,7 +144,12 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       <Summary orders={orders} />
 
       {!isClosed && (
-        <OrderForm sessionId={session.id} clientToken={clientToken} onAdded={() => showToast('Order added!')} />
+        <OrderForm
+          sessionId={session.id}
+          clientToken={clientToken}
+          onAdded={() => showToast('Order added!')}
+          onRefresh={fetchOrders}
+        />
       )}
       {isClosed && (
         <div className="alert alert--info">This session is closed. Orders can no longer be added or edited.</div>
@@ -150,10 +162,17 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
         isOrganizer={isOrganizer}
         isClosed={isClosed}
         onToast={showToast}
+        onRefresh={fetchOrders}
       />
 
       <div className="action-row">
         <button className="btn btn--secondary btn--block" onClick={handleShare}>📤 Share session</button>
+        <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>🧾 Download PDF</button>
+        {isOrganizer && (
+          <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
+            📊 Organizer dashboard
+          </button>
+        )}
         {isOrganizer && (
           <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
             {isClosed ? 'Reopen session' : 'Close session'}
@@ -162,6 +181,9 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       </div>
 
       {toast && <div className="toast">{toast}</div>}
+      {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
+
+      <PrintableReport session={session} orders={orders} />
     </div>
   )
 }
