@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { peso } from '../lib/utils'
 
-export default function OrderForm({ sessionId, clientToken, onAdded }) {
+export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }) {
   const [name, setName] = useState(() => localStorage.getItem('go_display_name') || '')
   const [orderName, setOrderName] = useState('')
   const [quantity, setQuantity] = useState(1)
@@ -54,6 +54,7 @@ export default function OrderForm({ sessionId, clientToken, onAdded }) {
     setPrice('')
     setQuantity(1)
     onAdded?.()
+    onRefresh?.()
   }
 
   return (
