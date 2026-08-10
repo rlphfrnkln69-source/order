@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { supabase } from '../supabaseClient'
+import { MapPin, Share2, FileDown, LayoutDashboard, Lock } from 'lucide-react'
 import OrderForm from './OrderForm.jsx'
 import OrderList from './OrderList.jsx'
 import Summary from './Summary.jsx'
@@ -135,7 +136,12 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
             )}
             {isClosed && <span className="badge badge--closed">CLOSED</span>}
           </div>
-          {session.restaurant_name && <p className="session-sub">📍 {session.restaurant_name}</p>}
+          {session.restaurant_name && (
+            <p className="session-sub">
+              <MapPin size={14} strokeWidth={2} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
+              {session.restaurant_name}
+            </p>
+          )}
           {session.notes && <p className="session-sub session-notes">{session.notes}</p>}
           <div className="session-code-row">
             <span className="muted">Code</span>
@@ -168,15 +174,20 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
         />
 
         <div className="action-row">
-          <button className="btn btn--secondary btn--block" onClick={handleShare}>📤 Share session</button>
-          <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>🧾 Download PDF</button>
+          <button className="btn btn--secondary btn--block" onClick={handleShare}>
+            <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
+          </button>
+          <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>
+            <FileDown size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Download PDF
+          </button>
           {isOrganizer && (
             <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
-              📊 Organizer dashboard
+              <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
             </button>
           )}
           {isOrganizer && (
             <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
+              <Lock size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
               {isClosed ? 'Reopen session' : 'Close session'}
             </button>
           )}
