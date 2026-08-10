@@ -16,7 +16,15 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast, onRefresh 
   async function saveEdit() {
     const qty = Number(draft.quantity)
     const pr = Number(draft.price)
-    if (!draft.name.trim() || !draft.order_name.trim() || !qty || qty <= 0 || pr < 0) {
+    if (
+      !draft.name.trim() ||
+      !draft.order_name.trim() ||
+      !qty ||
+      qty <= 0 ||
+      qty > 999 ||
+      pr < 0 ||
+      pr > 999999
+    ) {
       onToast("Check the order details — they don't look right.")
       return
     }
@@ -79,6 +87,7 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast, onRefresh 
             className="ticket-edit-input ticket-edit-input--small"
             type="number"
             min="1"
+            max="999"
             value={draft.quantity}
             onChange={(e) => setDraft({ ...draft, quantity: e.target.value })}
             placeholder="Qty"
@@ -87,6 +96,7 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast, onRefresh 
             className="ticket-edit-input ticket-edit-input--small"
             type="number"
             min="0"
+            max="999999"
             step="0.01"
             value={draft.price}
             onChange={(e) => setDraft({ ...draft, price: e.target.value })}
