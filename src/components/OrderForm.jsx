@@ -52,14 +52,13 @@ export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }
       <h2 className="card-title">Add your order</h2>
       <label className="field">
         <span>Your name</span>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ralph" maxLength={40} />
+        <input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} />
       </label>
       <label className="field">
         <span>What do you want?</span>
         <input
           value={orderName}
           onChange={(e) => setOrderName(e.target.value)}
-          placeholder="Chicken Inasal"
           maxLength={60}
         />
       </label>
@@ -92,7 +91,6 @@ export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }
               inputMode="decimal"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="150"
             />
           </div>
         </label>
