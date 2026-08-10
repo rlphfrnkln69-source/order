@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { peso } from '../lib/utils'
 
-function OrderRow({ order, canManage, isOrganizer, isClosed, onToast }) {
+function OrderRow({ order, canManage, isOrganizer, isClosed, onToast, onRefresh }) {
   const [editing, setEditing] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [draft, setDraft] = useState({
@@ -37,6 +37,7 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast }) {
     }
     setEditing(false)
     onToast('Order updated')
+    onRefresh?.()
   }
 
   async function doDelete() {
@@ -45,13 +46,17 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast }) {
     setBusy(false)
     setConfirmingDelete(false)
     if (error) onToast('Could not delete order.')
-    else onToast('Order deleted')
+    else {
+      onToast('Order deleted')
+      onRefresh?.()
+    }
   }
 
   async function togglePaid() {
     const next = order.payment_status === 'paid' ? 'unpaid' : 'paid'
     const { error } = await supabase.from('orders').update({ payment_status: next }).eq('id', order.id)
     if (error) onToast('Could not update payment status.')
+    else onRefresh?.()
   }
 
   if (editing) {
@@ -138,7 +143,7 @@ function OrderRow({ order, canManage, isOrganizer, isClosed, onToast }) {
   )
 }
 
-export default function OrderList({ orders, loading, clientToken, isOrganizer, isClosed, onToast }) {
+export default function OrderList({ orders, loading, clientToken, isOrganizer, isClosed, onToast, onRefresh }) {
   if (loading) {
     return <p className="muted center">Loading orders…</p>
   }
@@ -164,6 +169,7 @@ export default function OrderList({ orders, loading, clientToken, isOrganizer, i
             isOrganizer={isOrganizer}
             isClosed={isClosed}
             onToast={onToast}
+            onRefresh={onRefresh}
           />
         ))}
       </div>
