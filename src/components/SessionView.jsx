@@ -109,81 +109,83 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const isClosed = session.status === 'closed'
 
   return (
-    <div className="screen app-ui">
-      <header className="topbar">
-        <button className="link-btn" onClick={onLeave}>← New / switch session</button>
-      </header>
+    <>
+      <div className="screen app-ui">
+        <header className="topbar">
+          <button className="link-btn" onClick={onLeave}>← New / switch session</button>
+        </header>
 
-      <section className="session-card">
-        <div className="session-card-row">
-          {renaming ? (
-            <input
-              className="session-rename-input"
-              value={nameDraft}
-              onChange={(e) => setNameDraft(e.target.value)}
-              onBlur={handleRename}
-              onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-              autoFocus
-            />
-          ) : (
-            <h1 className="session-title" onClick={() => isOrganizer && setRenaming(true)}>
-              {session.session_name}
-              {isOrganizer && <span className="edit-hint">✎</span>}
-            </h1>
-          )}
-          {isClosed && <span className="badge badge--closed">CLOSED</span>}
-        </div>
-        {session.restaurant_name && <p className="session-sub">📍 {session.restaurant_name}</p>}
-        {session.notes && <p className="session-sub session-notes">{session.notes}</p>}
-        <div className="session-code-row">
-          <span className="muted">Code</span>
-          <span className="session-code">{session.session_code}</span>
-        </div>
-      </section>
+        <section className="session-card">
+          <div className="session-card-row">
+            {renaming ? (
+              <input
+                className="session-rename-input"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                onBlur={handleRename}
+                onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+                autoFocus
+              />
+            ) : (
+              <h1 className="session-title" onClick={() => isOrganizer && setRenaming(true)}>
+                {session.session_name}
+                {isOrganizer && <span className="edit-hint">✎</span>}
+              </h1>
+            )}
+            {isClosed && <span className="badge badge--closed">CLOSED</span>}
+          </div>
+          {session.restaurant_name && <p className="session-sub">📍 {session.restaurant_name}</p>}
+          {session.notes && <p className="session-sub session-notes">{session.notes}</p>}
+          <div className="session-code-row">
+            <span className="muted">Code</span>
+            <span className="session-code">{session.session_code}</span>
+          </div>
+        </section>
 
-      <Summary orders={orders} />
+        <Summary orders={orders} />
 
-      {!isClosed && (
-        <OrderForm
-          sessionId={session.id}
+        {!isClosed && (
+          <OrderForm
+            sessionId={session.id}
+            clientToken={clientToken}
+            onAdded={() => showToast('Order added!')}
+            onRefresh={fetchOrders}
+          />
+        )}
+        {isClosed && (
+          <div className="alert alert--info">This session is closed. Orders can no longer be added or edited.</div>
+        )}
+
+        <OrderList
+          orders={orders}
+          loading={loadingOrders}
           clientToken={clientToken}
-          onAdded={() => showToast('Order added!')}
+          isOrganizer={isOrganizer}
+          isClosed={isClosed}
+          onToast={showToast}
           onRefresh={fetchOrders}
         />
-      )}
-      {isClosed && (
-        <div className="alert alert--info">This session is closed. Orders can no longer be added or edited.</div>
-      )}
 
-      <OrderList
-        orders={orders}
-        loading={loadingOrders}
-        clientToken={clientToken}
-        isOrganizer={isOrganizer}
-        isClosed={isClosed}
-        onToast={showToast}
-        onRefresh={fetchOrders}
-      />
+        <div className="action-row">
+          <button className="btn btn--secondary btn--block" onClick={handleShare}>📤 Share session</button>
+          <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>🧾 Download PDF</button>
+          {isOrganizer && (
+            <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
+              📊 Organizer dashboard
+            </button>
+          )}
+          {isOrganizer && (
+            <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
+              {isClosed ? 'Reopen session' : 'Close session'}
+            </button>
+          )}
+        </div>
 
-      <div className="action-row">
-        <button className="btn btn--secondary btn--block" onClick={handleShare}>📤 Share session</button>
-        <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>🧾 Download PDF</button>
-        {isOrganizer && (
-          <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
-            📊 Organizer dashboard
-          </button>
-        )}
-        {isOrganizer && (
-          <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
-            {isClosed ? 'Reopen session' : 'Close session'}
-          </button>
-        )}
+        {toast && <div className="toast">{toast}</div>}
+        {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
       </div>
 
-      {toast && <div className="toast">{toast}</div>}
-      {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
-
       <PrintableReport session={session} orders={orders} />
-    </div>
+    </>
   )
 }
