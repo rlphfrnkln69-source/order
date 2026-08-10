@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { peso } from '../lib/utils'
 export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }) {
-  const [name, setName] = useState(() => localStorage.getItem('go_display_name') || '')
+  const [name, setName] = useState('')
   const [orderName, setOrderName] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [price, setPrice] = useState('')
@@ -40,7 +40,6 @@ export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }
       setErr('Could not add your order. Please try again.')
       return
     }
-    localStorage.setItem('go_display_name', trimmedName)
     setOrderName('')
     setPrice('')
     setQuantity(1)
@@ -73,35 +72,3 @@ export default function OrderForm({ sessionId, clientToken, onAdded, onRefresh }
               min="1"
               max="999"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              inputMode="numeric"
-            />
-            <button type="button" className="stepper-btn" onClick={() => bumpQty(1)} aria-label="Increase quantity">+</button>
-          </div>
-        </label>
-        <label className="field field--price">
-          <span>Price per item</span>
-          <div className="price-input">
-            <span className="price-prefix">₱</span>
-            <input
-              type="number"
-              min="0"
-              max="999999"
-              step="0.01"
-              inputMode="decimal"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-          </div>
-        </label>
-      </div>
-      <div className="live-total">
-        Total: <strong>{peso(total)}</strong>
-      </div>
-      {err && <div className="alert">{err}</div>}
-      <button className="btn btn--primary btn--block" type="submit" disabled={submitting}>
-        {submitting ? 'Adding…' : '+ ADD ORDER'}
-      </button>
-    </form>
-  )
-}
