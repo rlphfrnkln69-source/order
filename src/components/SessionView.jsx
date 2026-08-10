@@ -5,6 +5,7 @@ import OrderList from './OrderList.jsx'
 import Summary from './Summary.jsx'
 import OrganizerDashboard from './OrganizerDashboard.jsx'
 import PrintableReport from './PrintableReport.jsx'
+import TipJar from './TipJar.jsx'
 
 export default function SessionView({ session, clientToken, onSessionUpdated, onLeave }) {
   const [orders, setOrders] = useState([])
@@ -183,6 +184,8 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
         {toast && <div className="toast">{toast}</div>}
         {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
+
+        <TipJar onToast={showToast} />
       </div>
 
       <PrintableReport session={session} orders={orders} />
