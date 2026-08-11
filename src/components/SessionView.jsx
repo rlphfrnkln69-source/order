@@ -4,6 +4,8 @@ import { MapPin, Share2, FileDown, LayoutDashboard, Lock } from 'lucide-react'
 import OrderForm from './OrderForm.jsx'
 import OrderList from './OrderList.jsx'
 import Summary from './Summary.jsx'
+import PeopleTab from './PeopleTab.jsx'
+import BottomNav from './BottomNav.jsx'
 import OrganizerDashboard from './OrganizerDashboard.jsx'
 import PrintableReport from './PrintableReport.jsx'
 import TipJar from './TipJar.jsx'
@@ -15,6 +17,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const [renaming, setRenaming] = useState(false)
   const [nameDraft, setNameDraft] = useState(session.session_name)
   const [showDashboard, setShowDashboard] = useState(false)
+  const [activeTab, setActiveTab] = useState('orders')
 
   const isOrganizer = useMemo(() => {
     return localStorage.getItem(`go_organizer_${session.id}`) === session.organizer_token
@@ -112,7 +115,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
   return (
     <>
-      <div className="screen app-ui">
+      <div className="screen app-ui app-ui--tabbed">
         <header className="topbar">
           <button className="link-btn" onClick={onLeave}>← New / switch session</button>
         </header>
@@ -149,55 +152,65 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
           </div>
         </section>
 
-        <Summary orders={orders} />
-
-        {!isClosed && (
-          <OrderForm
-            sessionId={session.id}
-            clientToken={clientToken}
-            onAdded={() => showToast('Order added!')}
-            onRefresh={fetchOrders}
-          />
+        {activeTab === 'orders' && (
+          <>
+            {!isClosed && (
+              <OrderForm
+                sessionId={session.id}
+                clientToken={clientToken}
+                onAdded={() => showToast('Order added!')}
+                onRefresh={fetchOrders}
+              />
+            )}
+            {isClosed && (
+              <div className="alert alert--info">This session is closed. Orders can no longer be added or edited.</div>
+            )}
+            <OrderList
+              orders={orders}
+              loading={loadingOrders}
+              clientToken={clientToken}
+              isOrganizer={isOrganizer}
+              isClosed={isClosed}
+              onToast={showToast}
+              onRefresh={fetchOrders}
+            />
+          </>
         )}
-        {isClosed && (
-          <div className="alert alert--info">This session is closed. Orders can no longer be added or edited.</div>
+
+        {activeTab === 'summary' && <Summary orders={orders} />}
+
+        {activeTab === 'people' && <PeopleTab orders={orders} />}
+
+        {activeTab === 'more' && (
+          <>
+            <div className="action-row" style={{ marginTop: 0 }}>
+              <button className="btn btn--secondary btn--block" onClick={handleShare}>
+                <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
+              </button>
+              <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>
+                <FileDown size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Download PDF
+              </button>
+              {isOrganizer && (
+                <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
+                  <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
+                </button>
+              )}
+              {isOrganizer && (
+                <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
+                  <Lock size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
+                  {isClosed ? 'Reopen session' : 'Close session'}
+                </button>
+              )}
+            </div>
+            <TipJar onToast={showToast} />
+          </>
         )}
-
-        <OrderList
-          orders={orders}
-          loading={loadingOrders}
-          clientToken={clientToken}
-          isOrganizer={isOrganizer}
-          isClosed={isClosed}
-          onToast={showToast}
-          onRefresh={fetchOrders}
-        />
-
-        <div className="action-row">
-          <button className="btn btn--secondary btn--block" onClick={handleShare}>
-            <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
-          </button>
-          <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>
-            <FileDown size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Download PDF
-          </button>
-          {isOrganizer && (
-            <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
-              <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
-            </button>
-          )}
-          {isOrganizer && (
-            <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
-              <Lock size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
-              {isClosed ? 'Reopen session' : 'Close session'}
-            </button>
-          )}
-        </div>
 
         {toast && <div className="toast">{toast}</div>}
         {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
-
-        <TipJar onToast={showToast} />
       </div>
+
+      <BottomNav active={activeTab} onChange={setActiveTab} />
 
       <PrintableReport session={session} orders={orders} />
     </>
