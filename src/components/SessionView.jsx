@@ -177,7 +177,29 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
           </>
         )}
 
-        {activeTab === 'summary' && <Summary orders={orders} />}
+        {activeTab === 'summary' && (
+          <>
+            <Summary orders={orders} />
+            <button
+              className="btn btn--outline btn--block"
+              onClick={handleDownloadPdf}
+              style={{ marginBottom: 20 }}
+            >
+              <FileDown size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
+              Download PDF
+            </button>
+            <h2 className="card-title" style={{ marginBottom: 10 }}>Orders</h2>
+            <OrderList
+              orders={orders}
+              loading={loadingOrders}
+              clientToken={clientToken}
+              isOrganizer={isOrganizer}
+              isClosed={isClosed}
+              onToast={showToast}
+              onRefresh={fetchOrders}
+            />
+          </>
+        )}
 
         {activeTab === 'people' && <PeopleTab orders={orders} />}
 
@@ -186,9 +208,6 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
             <div className="action-row" style={{ marginTop: 0 }}>
               <button className="btn btn--secondary btn--block" onClick={handleShare}>
                 <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
-              </button>
-              <button className="btn btn--outline btn--block" onClick={handleDownloadPdf}>
-                <FileDown size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Download PDF
               </button>
               {isOrganizer && (
                 <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
