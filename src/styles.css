@@ -714,3 +714,98 @@ button, input {
   font-size: 10px;
   font-weight: 600;
 }
+/* ---------- Chat ---------- */
+.chat-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 84px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--green);
+  border: none;
+  color: var(--green-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  z-index: 16;
+}
+.chat-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--chili);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal--chat {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  padding-bottom: 12px;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px;
+}
+.chat-bubble {
+  max-width: 78%;
+  background: var(--surface);
+  border-radius: 14px 14px 14px 4px;
+  padding: 8px 12px;
+  align-self: flex-start;
+}
+.chat-bubble--mine {
+  background: var(--green);
+  color: var(--green-text);
+  align-self: flex-end;
+  border-radius: 14px 14px 4px 14px;
+}
+.chat-bubble-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green-mid);
+  margin-bottom: 2px;
+}
+.chat-bubble-body { font-size: 14px; }
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.chat-input-row input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 15px;
+  background: var(--paper);
+}
+.chat-send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green);
+  border: none;
+  color: var(--green-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.chat-name-form { padding-top: 4px; }
