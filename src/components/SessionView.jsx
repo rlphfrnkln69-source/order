@@ -6,6 +6,8 @@ import OrderList from './OrderList.jsx'
 import Summary from './Summary.jsx'
 import PeopleTab from './PeopleTab.jsx'
 import BottomNav from './BottomNav.jsx'
+import ChatButton from './ChatButton.jsx'
+import ChatSheet from './ChatSheet.jsx'
 import OrganizerDashboard from './OrganizerDashboard.jsx'
 import PrintableReport from './PrintableReport.jsx'
 import TipJar from './TipJar.jsx'
@@ -18,6 +20,11 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const [nameDraft, setNameDraft] = useState(session.session_name)
   const [showDashboard, setShowDashboard] = useState(false)
   const [activeTab, setActiveTab] = useState('orders')
+
+  const [messages, setMessages] = useState([])
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatSenderName, setChatSenderName] = useState('')
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const isOrganizer = useMemo(() => {
     return localStorage.getItem(`go_organizer_${session.id}`) === session.organizer_token
@@ -33,8 +40,18 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     setLoadingOrders(false)
   }, [session.id])
 
+  const fetchMessages = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('session_id', session.id)
+      .order('created_at', { ascending: true })
+    if (!error) setMessages(data)
+  }, [session.id])
+
   useEffect(() => {
     fetchOrders()
+    fetchMessages()
 
     const channel = supabase
       .channel(`session-${session.id}`)
@@ -43,6 +60,10 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: `id=eq.${session.id}` }, (payload) => {
         onSessionUpdated(payload.new)
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `session_id=eq.${session.id}` }, (payload) => {
+        setMessages((prev) => [...prev, payload.new])
+        setUnreadCount((prev) => (chatOpen ? 0 : prev + 1))
       })
       .subscribe()
 
@@ -55,6 +76,20 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   function showToast(msg) {
     setToast(msg)
     setTimeout(() => setToast(''), 2200)
+  }
+
+  function handleOpenChat() {
+    setChatOpen(true)
+    setUnreadCount(0)
+  }
+
+  async function handleSendMessage(body) {
+    const { error } = await supabase.from('messages').insert({
+      session_id: session.id,
+      sender_name: chatSenderName,
+      body,
+    })
+    if (error) showToast('Could not send message.')
   }
 
   async function handleShare() {
@@ -228,6 +263,18 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
         {toast && <div className="toast">{toast}</div>}
         {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
       </div>
+
+      <ChatButton unreadCount={unreadCount} onClick={handleOpenChat} />
+
+      {chatOpen && (
+        <ChatSheet
+          messages={messages}
+          senderName={chatSenderName}
+          onSenderNameChange={setChatSenderName}
+          onSend={handleSendMessage}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
 
       <BottomNav active={activeTab} onChange={setActiveTab} />
 
