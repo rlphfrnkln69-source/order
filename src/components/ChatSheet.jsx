@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { X, Send } from 'lucide-react'
 
-export default function ChatSheet({ messages, senderName, onSenderNameChange, onSend, onClose }) {
+export default function ChatSheet({
+  messages,
+  senderName,
+  onSenderNameChange,
+  onSend,
+  onTyping,
+  typingUsers,
+  lastOwnMessageId,
+  seenBy,
+  onClose,
+}) {
   const [draft, setDraft] = useState('')
   const [nameDraft, setNameDraft] = useState('')
   const listRef = useRef(null)
@@ -10,7 +20,7 @@ export default function ChatSheet({ messages, senderName, onSenderNameChange, on
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
-  }, [messages])
+  }, [messages, typingUsers])
 
   function handleSend(e) {
     e.preventDefault()
@@ -18,6 +28,11 @@ export default function ChatSheet({ messages, senderName, onSenderNameChange, on
     if (!trimmed) return
     onSend(trimmed)
     setDraft('')
+  }
+
+  function handleDraftChange(e) {
+    setDraft(e.target.value)
+    onTyping?.()
   }
 
   function handleSetName(e) {
@@ -52,16 +67,28 @@ export default function ChatSheet({ messages, senderName, onSenderNameChange, on
                 <div className="muted center" style={{ padding: '20px 0' }}>No messages yet — say hi!</div>
               )}
               {messages.map((m) => (
-                <div key={m.id} className={`chat-bubble ${m.sender_name === senderName ? 'chat-bubble--mine' : ''}`}>
-                  {m.sender_name !== senderName && <div className="chat-bubble-name">{m.sender_name}</div>}
-                  <div className="chat-bubble-body">{m.body}</div>
+                <div key={m.id}>
+                  <div className={`chat-bubble ${m.sender_name === senderName ? 'chat-bubble--mine' : ''}`}>
+                    {m.sender_name !== senderName && <div className="chat-bubble-name">{m.sender_name}</div>}
+                    <div className="chat-bubble-body">{m.body}</div>
+                  </div>
+                  {m.id === lastOwnMessageId && seenBy?.length > 0 && (
+                    <div className="chat-seen">
+                      Seen by {seenBy.join(', ')}
+                    </div>
+                  )}
                 </div>
               ))}
+              {typingUsers?.length > 0 && (
+                <div className="chat-typing">
+                  {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing…
+                </div>
+              )}
             </div>
             <form className="chat-input-row" onSubmit={handleSend}>
               <input
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={handleDraftChange}
                 placeholder="Type a message…"
                 maxLength={300}
               />
