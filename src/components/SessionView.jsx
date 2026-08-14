@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { supabase } from '../supabaseClient'
 import { MapPin, Share2, FileDown, LayoutDashboard, Lock } from 'lucide-react'
 import OrderForm from './OrderForm.jsx'
@@ -25,6 +25,9 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const [chatOpen, setChatOpen] = useState(false)
   const [chatSenderName, setChatSenderName] = useState(() => localStorage.getItem('go_chat_name') || '')
   const [unreadCount, setUnreadCount] = useState(0)
+  const [typingUsers, setTypingUsers] = useState([])
+  const [reads, setReads] = useState([])
+  const lastTypingSentRef = useRef(0)
 
   const isOrganizer = useMemo(() => {
     return localStorage.getItem(`go_organizer_${session.id}`) === session.organizer_token
@@ -48,6 +51,36 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       .order('created_at', { ascending: true })
     if (!error) setMessages(data)
   }, [session.id])
+
+  const fetchTyping = useCallback(async () => {
+    const fourSecondsAgo = new Date(Date.now() - 4000).toISOString()
+    const { data, error } = await supabase
+      .from('typing_status')
+      .select('sender_name, updated_at')
+      .eq('session_id', session.id)
+      .gt('updated_at', fourSecondsAgo)
+    if (!error && data) {
+      setTypingUsers(data.filter((t) => t.sender_name !== chatSenderName).map((t) => t.sender_name))
+    }
+  }, [session.id, chatSenderName])
+
+  const fetchReads = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('chat_reads')
+      .select('sender_name, last_read_at')
+      .eq('session_id', session.id)
+    if (!error) setReads(data)
+  }, [session.id])
+
+  const markAsRead = useCallback(async () => {
+    if (!chatSenderName) return
+    await supabase
+      .from('chat_reads')
+      .upsert(
+        { session_id: session.id, sender_name: chatSenderName, last_read_at: new Date().toISOString() },
+        { onConflict: 'session_id,sender_name' }
+      )
+  }, [session.id, chatSenderName])
 
   useEffect(() => {
     fetchOrders()
@@ -73,13 +106,22 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id])
 
-  // Fallback: poll for new messages while chat is open, since realtime
-  // delivery isn't reliable yet.
+  // Poll messages, typing status, and read receipts while chat is open —
+  // realtime delivery isn't reliable, so this is the source of truth for chat.
   useEffect(() => {
     if (!chatOpen) return
-    const interval = setInterval(fetchMessages, 3000)
+    fetchTyping()
+    fetchReads()
+    markAsRead()
+    const interval = setInterval(() => {
+      fetchMessages()
+      fetchTyping()
+      fetchReads()
+      markAsRead()
+    }, 2500)
     return () => clearInterval(interval)
-  }, [chatOpen, fetchMessages])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatOpen, chatSenderName])
 
   function showToast(msg) {
     setToast(msg)
@@ -111,7 +153,33 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       return
     }
     setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]))
+    markAsRead()
   }
+
+  function handleTyping() {
+    if (!chatSenderName) return
+    const now = Date.now()
+    if (now - lastTypingSentRef.current < 1500) return
+    lastTypingSentRef.current = now
+    supabase
+      .from('typing_status')
+      .upsert(
+        { session_id: session.id, sender_name: chatSenderName, updated_at: new Date().toISOString() },
+        { onConflict: 'session_id,sender_name' }
+      )
+  }
+
+  const lastOwnMessage = useMemo(() => {
+    const own = messages.filter((m) => m.sender_name === chatSenderName)
+    return own.length ? own[own.length - 1] : null
+  }, [messages, chatSenderName])
+
+  const seenBy = useMemo(() => {
+    if (!lastOwnMessage) return []
+    return reads
+      .filter((r) => r.sender_name !== chatSenderName && new Date(r.last_read_at) >= new Date(lastOwnMessage.created_at))
+      .map((r) => r.sender_name)
+  }, [reads, lastOwnMessage, chatSenderName])
 
   async function handleShare() {
     const url = new URL(window.location.href)
@@ -261,45 +329,3 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
         {activeTab === 'more' && (
           <>
-            <div className="action-row" style={{ marginTop: 0 }}>
-              <button className="btn btn--secondary btn--block" onClick={handleShare}>
-                <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
-              </button>
-              {isOrganizer && (
-                <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
-                  <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
-                </button>
-              )}
-              {isOrganizer && (
-                <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
-                  <Lock size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
-                  {isClosed ? 'Reopen session' : 'Close session'}
-                </button>
-              )}
-            </div>
-            <TipJar onToast={showToast} />
-          </>
-        )}
-
-        {toast && <div className="toast">{toast}</div>}
-        {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
-      </div>
-
-      <ChatButton unreadCount={unreadCount} onClick={handleOpenChat} />
-
-      {chatOpen && (
-        <ChatSheet
-          messages={messages}
-          senderName={chatSenderName}
-          onSenderNameChange={handleSetChatSenderName}
-          onSend={handleSendMessage}
-          onClose={() => setChatOpen(false)}
-        />
-      )}
-
-      <BottomNav active={activeTab} onChange={setActiveTab} />
-
-      <PrintableReport session={session} orders={orders} />
-    </>
-  )
-}
