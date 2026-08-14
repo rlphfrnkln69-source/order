@@ -106,8 +106,6 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id])
 
-  // Poll messages, typing status, and read receipts while chat is open —
-  // realtime delivery isn't reliable, so this is the source of truth for chat.
   useEffect(() => {
     if (!chatOpen) return
     fetchTyping()
@@ -329,3 +327,49 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
         {activeTab === 'more' && (
           <>
+            <div className="action-row" style={{ marginTop: 0 }}>
+              <button className="btn btn--secondary btn--block" onClick={handleShare}>
+                <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
+              </button>
+              {isOrganizer && (
+                <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
+                  <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
+                </button>
+              )}
+              {isOrganizer && (
+                <button className="btn btn--outline btn--block" onClick={handleCloseSession}>
+                  <Lock size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />
+                  {isClosed ? 'Reopen session' : 'Close session'}
+                </button>
+              )}
+            </div>
+            <TipJar onToast={showToast} />
+          </>
+        )}
+
+        {toast && <div className="toast">{toast}</div>}
+        {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
+      </div>
+
+      <ChatButton unreadCount={unreadCount} onClick={handleOpenChat} />
+
+      {chatOpen && (
+        <ChatSheet
+          messages={messages}
+          senderName={chatSenderName}
+          onSenderNameChange={handleSetChatSenderName}
+          onSend={handleSendMessage}
+          onTyping={handleTyping}
+          typingUsers={typingUsers}
+          lastOwnMessageId={lastOwnMessage?.id}
+          seenBy={seenBy}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
+
+      <BottomNav active={activeTab} onChange={setActiveTab} />
+
+      <PrintableReport session={session} orders={orders} />
+    </>
+  )
+}
