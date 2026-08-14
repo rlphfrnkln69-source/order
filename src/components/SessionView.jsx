@@ -23,7 +23,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
   const [messages, setMessages] = useState([])
   const [chatOpen, setChatOpen] = useState(false)
-  const [chatSenderName, setChatSenderName] = useState('')
+  const [chatSenderName, setChatSenderName] = useState(() => localStorage.getItem('go_chat_name') || '')
   const [unreadCount, setUnreadCount] = useState(0)
 
   const isOrganizer = useMemo(() => {
