@@ -809,3 +809,15 @@ button, input {
   flex-shrink: 0;
 }
 .chat-name-form { padding-top: 4px; }
+.chat-typing {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+  padding: 2px 4px 4px;
+}
+.chat-seen {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  margin: 2px 2px 0;
+}
