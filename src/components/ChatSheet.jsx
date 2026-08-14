@@ -13,7 +13,8 @@ export default function ChatSheet({
   onClose,
 }) {
   const [draft, setDraft] = useState('')
-  const [nameDraft, setNameDraft] = useState('')
+  const [nameDraft, setNameDraft] = useState(senderName || '')
+  const [confirmed, setConfirmed] = useState(false)
   const listRef = useRef(null)
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function ChatSheet({
     const trimmed = nameDraft.trim()
     if (!trimmed) return
     onSenderNameChange(trimmed)
+    setConfirmed(true)
   }
 
   return (
@@ -52,7 +54,7 @@ export default function ChatSheet({
           </button>
         </div>
 
-        {!senderName ? (
+        {!confirmed ? (
           <form className="chat-name-form" onSubmit={handleSetName}>
             <label className="field">
               <span>Your name, to chat</span>
