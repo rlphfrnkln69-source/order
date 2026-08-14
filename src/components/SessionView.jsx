@@ -62,7 +62,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
         onSessionUpdated(payload.new)
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `session_id=eq.${session.id}` }, (payload) => {
-        setMessages((prev) => [...prev, payload.new])
+        setMessages((prev) => (prev.some((m) => m.id === payload.new.id) ? prev : [...prev, payload.new]))
         setUnreadCount((prev) => (chatOpen ? 0 : prev + 1))
       })
       .subscribe()
@@ -72,6 +72,14 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id])
+
+  // Fallback: poll for new messages while chat is open, since realtime
+  // delivery isn't reliable yet.
+  useEffect(() => {
+    if (!chatOpen) return
+    const interval = setInterval(fetchMessages, 3000)
+    return () => clearInterval(interval)
+  }, [chatOpen, fetchMessages])
 
   function showToast(msg) {
     setToast(msg)
@@ -83,13 +91,26 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
     setUnreadCount(0)
   }
 
+  function handleSetChatSenderName(name) {
+    localStorage.setItem('go_chat_name', name)
+    setChatSenderName(name)
+  }
+
   async function handleSendMessage(body) {
-    const { error } = await supabase.from('messages').insert({
-      session_id: session.id,
-      sender_name: chatSenderName,
-      body,
-    })
-    if (error) showToast('Could not send message.')
+    const { data, error } = await supabase
+      .from('messages')
+      .insert({
+        session_id: session.id,
+        sender_name: chatSenderName,
+        body,
+      })
+      .select()
+      .single()
+    if (error) {
+      showToast('Could not send message.')
+      return
+    }
+    setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]))
   }
 
   async function handleShare() {
@@ -270,7 +291,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
         <ChatSheet
           messages={messages}
           senderName={chatSenderName}
-          onSenderNameChange={setChatSenderName}
+          onSenderNameChange={handleSetChatSenderName}
           onSend={handleSendMessage}
           onClose={() => setChatOpen(false)}
         />
