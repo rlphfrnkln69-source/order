@@ -3,10 +3,15 @@ import { supabase } from './supabaseClient'
 import { getOrCreateClientToken } from './lib/utils'
 import SessionSetup from './components/SessionSetup.jsx'
 import SessionView from './components/SessionView.jsx'
+import AdminApp from './components/AdminApp.jsx'
 
 function getCodeFromUrl() {
   const params = new URLSearchParams(window.location.search)
   return params.get('s')
+}
+
+function isAdminRoute() {
+  return new URLSearchParams(window.location.search).get('admin') === '1'
 }
 
 export default function App() {
@@ -23,7 +28,6 @@ export default function App() {
       .select('*')
       .eq('session_code', code.toUpperCase())
       .maybeSingle()
-
     if (err) {
       setError("Couldn't load that session. Check your connection and try again.")
     } else if (!data) {
@@ -36,6 +40,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (isAdminRoute()) {
+      setLoading(false)
+      return
+    }
     const code = getCodeFromUrl()
     if (code) {
       loadSessionByCode(code)
@@ -55,6 +63,10 @@ export default function App() {
   function handleLeaveSession() {
     setSession(null)
     window.history.replaceState({}, '', window.location.pathname)
+  }
+
+  if (isAdminRoute()) {
+    return <AdminApp />
   }
 
   if (loading) {
