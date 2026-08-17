@@ -5,7 +5,6 @@ import { generateSessionCode, generateToken } from '../lib/utils'
 export default function SessionSetup({ clientToken, onSessionReady, loadError, onJoinByCode }) {
   const [mode, setMode] = useState('create') // 'create' | 'join'
   const [sessionName, setSessionName] = useState('')
-  const [restaurant, setRestaurant] = useState('')
   const [notes, setNotes] = useState('')
   const [joinCode, setJoinCode] = useState('')
   const [busy, setBusy] = useState(false)
@@ -14,7 +13,7 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
   async function handleCreate(e) {
     e.preventDefault()
     if (!sessionName.trim()) {
-      setErr('Give this session a name.')
+      setErr('Give this group a name.')
       return
     }
     setBusy(true)
@@ -30,7 +29,6 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
         .insert({
           session_code: code,
           session_name: sessionName.trim(),
-          restaurant_name: restaurant.trim() || null,
           notes: notes.trim() || null,
           organizer_token: organizerToken,
         })
@@ -95,20 +93,12 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
       {mode === 'create' ? (
         <form className="card" onSubmit={handleCreate}>
           <label className="field">
-            <span>Session name</span>
+            <span>Group name</span>
             <input
               value={sessionName}
               onChange={(e) => setSessionName(e.target.value)}
               maxLength={80}
               autoFocus
-            />
-          </label>
-          <label className="field">
-            <span>Restaurant <em>(optional)</em></span>
-            <input
-              value={restaurant}
-              onChange={(e) => setRestaurant(e.target.value)}
-              maxLength={80}
             />
           </label>
           <label className="field">
@@ -135,7 +125,7 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
               style={{ letterSpacing: '0.2em', fontWeight: 700 }}
             />
           </label>
-          <button className="btn btn--primary btn--block" type="submit" disabled={busy}>
+          <button className="btn btn--primary btn--block" type="submit">
             {busy ? 'Joining…' : 'Join session'}
           </button>
         </form>
