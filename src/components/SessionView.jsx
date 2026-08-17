@@ -11,6 +11,7 @@ import ChatSheet from './ChatSheet.jsx'
 import OrganizerDashboard from './OrganizerDashboard.jsx'
 import PrintableReport from './PrintableReport.jsx'
 import TipJar from './TipJar.jsx'
+import ManageMenu from './ManageMenu.jsx'
 
 export default function SessionView({ session, clientToken, onSessionUpdated, onLeave }) {
   const [orders, setOrders] = useState([])
