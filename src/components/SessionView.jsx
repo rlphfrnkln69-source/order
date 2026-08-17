@@ -22,6 +22,9 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   const [showDashboard, setShowDashboard] = useState(false)
   const [activeTab, setActiveTab] = useState('orders')
 
+  const [menuItems, setMenuItems] = useState([])
+  const [showManageMenu, setShowManageMenu] = useState(false)
+
   const [messages, setMessages] = useState([])
   const [chatOpen, setChatOpen] = useState(false)
   const [chatSenderName, setChatSenderName] = useState(() => localStorage.getItem('go_chat_name') || '')
@@ -42,6 +45,15 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
       .order('created_at', { ascending: true })
     if (!error) setOrders(data)
     setLoadingOrders(false)
+  }, [session.id])
+
+  const fetchMenuItems = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('menu_items')
+      .select('*')
+      .eq('session_id', session.id)
+      .order('created_at', { ascending: true })
+    if (!error) setMenuItems(data)
   }, [session.id])
 
   const fetchMessages = useCallback(async () => {
@@ -86,6 +98,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
   useEffect(() => {
     fetchOrders()
     fetchMessages()
+    fetchMenuItems()
 
     const channel = supabase
       .channel(`session-${session.id}`)
@@ -281,6 +294,7 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
               <OrderForm
                 sessionId={session.id}
                 clientToken={clientToken}
+                menuItems={menuItems}
                 onAdded={() => showToast('Order added!')}
                 onRefresh={fetchOrders}
               />
@@ -333,6 +347,11 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
                 <Share2 size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Share session
               </button>
               {isOrganizer && (
+                <button className="btn btn--outline btn--block" onClick={() => setShowManageMenu(true)}>
+                  Manage menu
+                </button>
+              )}
+              {isOrganizer && (
                 <button className="btn btn--outline btn--block" onClick={() => setShowDashboard(true)}>
                   <LayoutDashboard size={16} strokeWidth={2} style={{ verticalAlign: '-3px', marginRight: 6 }} />Organizer dashboard
                 </button>
@@ -350,6 +369,15 @@ export default function SessionView({ session, clientToken, onSessionUpdated, on
 
         {toast && <div className="toast">{toast}</div>}
         {showDashboard && <OrganizerDashboard orders={orders} onClose={() => setShowDashboard(false)} />}
+        {showManageMenu && (
+          <ManageMenu
+            sessionId={session.id}
+            menuItems={menuItems}
+            onRefresh={fetchMenuItems}
+            onClose={() => setShowManageMenu(false)}
+            onToast={showToast}
+          />
+        )}
       </div>
 
       <ChatButton unreadCount={unreadCount} onClick={handleOpenChat} />
