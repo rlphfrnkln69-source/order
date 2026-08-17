@@ -821,3 +821,26 @@ button, input {
   text-align: right;
   margin: 2px 2px 0;
 }
+/* ---------- Menu picker ---------- */
+.menu-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--surface-white);
+  cursor: pointer;
+  text-align: left;
+}
+.menu-item-row--selected {
+  border-color: var(--green);
+  background: #F6FBEF;
+}
+.menu-item-name { font-weight: 600; font-size: 15px; }
+.menu-item-price { font-family: var(--font-display); font-weight: 700; color: var(--green-mid); }
