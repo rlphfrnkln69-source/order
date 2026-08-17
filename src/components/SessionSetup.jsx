@@ -37,6 +37,17 @@ export default function SessionSetup({ clientToken, onSessionReady, loadError, o
 
       if (!error) {
         localStorage.setItem(`go_organizer_${data.id}`, organizerToken)
+
+        // Copy the current restaurant menu into this new session.
+        const { data: masterMenu } = await supabase
+          .from('restaurant_menu_items')
+          .select('category, name, price, is_available')
+        if (masterMenu?.length) {
+          await supabase.from('menu_items').insert(
+            masterMenu.map((item) => ({ ...item, session_id: data.id }))
+          )
+        }
+
         onSessionReady(data)
         setBusy(false)
         return
